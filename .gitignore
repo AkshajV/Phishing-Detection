@@ -33,4 +33,10 @@ ENV/
 
 # Project specific
 emails/
+*.eml
+attachments/
+.env
+ENV/
+
+# Project specific
 *.eml 
