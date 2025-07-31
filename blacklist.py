@@ -7,6 +7,10 @@ import json
 import requests
 from urllib.parse import urlparse, quote
 from urlextract import URLExtract
+import pandas as pd
+import joblib
+# Import the custom classes from the separate file to avoid retraining
+from model_classes import SenderPatternFeatures, URLFeatureExtractor
 
 EML_DIR = 'emails/'
 WHITELIST_FILE = 'whitelist.json'
@@ -135,10 +139,15 @@ def extract_attachments(msg, save_dir='attachments'):
 
         filename = part.get_filename()
         if filename:
-            filepath = os.path.join(save_dir, filename)
-            with open(filepath, "wb") as f:
-                f.write(part.get_payload(decode=True))
-            attachments.append(filepath)
+            # Clean filename to avoid path issues
+            safe_filename = re.sub(r'[<>:"/\\|?*]', '_', filename)
+            filepath = os.path.join(save_dir, safe_filename)
+            try:
+                with open(filepath, "wb") as f:
+                    f.write(part.get_payload(decode=True))
+                attachments.append(filepath)
+            except Exception as e:
+                print(f"⚠️ Error saving attachment {filename}: {e}")
     return attachments
 
 def get_file_sha256(filepath):
@@ -172,6 +181,39 @@ def check_virustotal(file_hash):
         print(f"⚠️ Error checking VirusTotal: {e}")
         return 'unknown'
 
+def ml_detection_check(from_addr, subject, body, urls):
+    """
+    Use ML model to detect phishing emails when blacklist checks fail
+    """
+    try:
+        # Load the trained model
+        model = joblib.load("phishing_email_model_fixed.pkl")
+        
+        # Prepare data for ML model
+        email_data = {
+            'subject': subject,
+            'body': body,
+            'sender': from_addr,
+            'urls': len(urls)
+        }
+        
+        # Create DataFrame for prediction
+        test_df = pd.DataFrame([email_data])
+        
+        # Make prediction
+        prediction = model.predict(test_df)[0]
+        prediction_proba = model.predict_proba(test_df)[0]
+        confidence = max(prediction_proba) * 100
+        
+        # Determine result
+        result = "PHISHING" if prediction == 1 else "LEGITIMATE"
+        
+        return result, confidence
+        
+    except Exception as e:
+        print(f"⚠️ Error in ML detection: {e}")
+        return "ERROR", 0
+
 if __name__ == '__main__':
     whitelist = load_whitelist(WHITELIST_FILE)
 
@@ -189,6 +231,12 @@ if __name__ == '__main__':
                 print(f"📧 File: {eml_file}")
                 print(f"From: {from_addr}")
                 print(f"Subject: {subject}")
+                
+                # Track overall email status
+                email_status = "SAFE"
+                blacklist_failed = False
+                
+                print("🔍 BLACKLIST ANALYSIS:")
                 print("Extracted URLs:")
                 for url in urls:
                     print(f"  - {url}")
@@ -198,10 +246,13 @@ if __name__ == '__main__':
                     status = check_phishtank(url)
                     if status == 'malicious':
                         print("    ⚠️ Malicious URL detected!")
+                        email_status = "MALICIOUS"
                     elif status == 'safe':
                         print("    ✅ URL is safe.")
                     else:
                         print("    ⚠️ Unknown status.")
+                        blacklist_failed = True
+                
                 # --- Attachment checking ---
                 attachments = extract_attachments(msg)
                 if attachments:
@@ -211,11 +262,33 @@ if __name__ == '__main__':
                         status = check_virustotal(file_hash)
                         if status == 'malicious':
                             print(f"  ⚠️ Malicious attachment detected: {attachment}")
+                            email_status = "MALICIOUS"
                         elif status == 'safe':
                             print(f"  ✅ Attachment is safe: {attachment}")
                         else:
                             print(f"  ⚠️ File Not Found in VirusTotal Database (Unknown): {attachment}")
+                            blacklist_failed = True
                 else:
                     print("No attachments found.")
+                
+                # --- ML Detection as Fallback ---
+                if email_status != "MALICIOUS" and blacklist_failed:
+                    print("\n🤖 ML DETECTION (Fallback):")
+                    ml_result, confidence = ml_detection_check(from_addr, subject, body, urls)
+                    if ml_result == "PHISHING":
+                        print(f"    ⚠️ ML Model detected PHISHING (Confidence: {confidence:.2f}%)")
+                        email_status = "MALICIOUS"
+                    elif ml_result == "LEGITIMATE":
+                        print(f"    ✅ ML Model detected LEGITIMATE (Confidence: {confidence:.2f}%)")
+                    else:
+                        print(f"    ⚠️ ML detection error")
+                
+                # Final verdict
+                print(f"\n🎯 FINAL VERDICT: {email_status}")
+                if email_status == "MALICIOUS":
+                    print("    🚨 EMAIL IS MALICIOUS - TAKE ACTION!")
+                else:
+                    print("    ✅ Email appears to be safe")
+                
                 print("\n" + "-"*60 + "\n")
 

@@ -1,0 +1,11 @@
+filename,subject,sender,urls,body_length,prediction,confidence,prediction_proba
+Attachment Check.eml,Attachment Check,PoopyGuano <vidyarthy.akshaj@gmail.com>,0,1,PHISHING,73.95834592394412,[0.26041654 0.73958346]
+DONT OPEN OR CLICK.eml,DONT OPEN OR CLICK,guano penguin <guanopenguin7@gmail.com>,1,55,PHISHING,86.3003332337178,[0.13699667 0.86300333]
+eicar_test_email.eml,Urgent: Your Invoice is Attached,phisher@badguy.com,0,124,PHISHING,75.79573912760411,[0.24204261 0.75795739]
+Fish.eml,Fish,guano penguin <guanopenguin7@gmail.com>,2,99,PHISHING,77.7747159765105,[0.22225284 0.77774716]
+New sign in to Steam.eml,New sign in to Steam,"""Steam Team"" <noreply@steampowered.com>",4,1307,LEGITIMATE,74.95113796527372,[0.74951138 0.25048862]
+OhnePixel sent you a message.eml,OhnePixel sent you a message,"""Character.AI"" <no-reply@chat.character.ai>",8,9786,LEGITIMATE,64.010239669592,[0.6401024 0.3598976]
+PhishCHeck.eml,PhishCHeck,guano penguin <guanopenguin7@gmail.com>,2,75,PHISHING,71.45751275847564,[0.28542487 0.71457513]
+Sahil Natikar gave you kudos! (1).eml,Sahil Natikar gave you kudos!,"""Strava"" <mail@update.strava.com>",10,1621,LEGITIMATE,64.98829724794999,[0.64988297 0.35011703]
+Sahil Natikar gave you kudos!.eml,Sahil Natikar gave you kudos!,"""Strava"" <mail@update.strava.com>",10,1629,LEGITIMATE,63.03954111083958,[0.63039541 0.36960459]
+Urgent_ Verify Your Account Now.eml,Urgent: Verify Your Account Now,guano penguin <guanopenguin7@gmail.com>,1,90,PHISHING,79.87753200584578,[0.20122468 0.79877532]
