@@ -39,4 +39,5 @@ attachments/
 ENV/
 
 # Project specific
-*.eml 
+*.eml
+eml_test_results.csv 
