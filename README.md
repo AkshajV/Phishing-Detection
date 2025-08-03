@@ -202,9 +202,7 @@ The hybrid system provides detailed analysis:
 - **Final Verdict**: Combined decision with reasoning
 - **Action Items**: Clear recommendations for handling
 
-## ⚠️ Disclaimer
 
-This tool is for educational and research purposes. While it provides comprehensive phishing detection, it should be part of a multi-layered security strategy. Always exercise caution with suspicious emails.
 
 ## 🔗 Dependencies
 
