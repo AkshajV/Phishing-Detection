@@ -206,13 +206,7 @@ The system generates detailed CSV reports with:
 4. Add tests for new functionality
 5. Submit a pull request
 
-## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## ⚠️ Disclaimer
-
-This tool is for educational and research purposes. While it can help identify potential phishing emails, it should not be the sole method of email security. Always use multiple security layers and exercise caution with suspicious emails.
 
 ## 🔗 Dependencies
 

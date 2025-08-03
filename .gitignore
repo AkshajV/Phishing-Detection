@@ -40,4 +40,3 @@ ENV/
 
 # Project specific
 *.eml
-eml_test_results.csv 
