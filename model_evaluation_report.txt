@@ -1,0 +1,17 @@
+PHISHING EMAIL DETECTION MODEL EVALUATION REPORT
+==================================================
+
+CROSS-VALIDATION RESULTS (5-fold):
+------------------------------
+Accuracy:  0.9716 (+/- 0.0079)
+Precision: 0.9589 (+/- 0.0083)
+Recall:    0.9922 (+/- 0.0056)
+F1-Score:  0.9753 (+/- 0.0069)
+
+TEST SET RESULTS:
+--------------------
+Accuracy:  0.9793
+Precision: 0.9679
+Recall:    0.9965
+F1-Score:  0.9819
+ROC AUC:   0.9989

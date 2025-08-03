@@ -78,12 +78,12 @@ def test_eml_files():
     Test all .eml files in the emails folder against the trained model
     """
     # Load the trained model
-    print("Loading the trained model...")
+    print("🔍 Loading the trained model...")
     try:
         model = joblib.load("phishing_email_model_fixed.pkl")
-        print("✓ Model loaded successfully!")
+        print("✅ Model loaded successfully!")
     except Exception as e:
-        print(f"✗ Error loading model: {e}")
+        print(f"❌ Error loading model: {e}")
         return
     
     # Get all .eml files
@@ -91,23 +91,23 @@ def test_eml_files():
     eml_files = list(emails_dir.glob("*.eml"))
     
     if not eml_files:
-        print("No .eml files found in the emails directory!")
+        print("❌ No .eml files found in the emails directory!")
         return
     
-    print(f"\nFound {len(eml_files)} .eml files to test:")
+    print(f"\n📁 Found {len(eml_files)} .eml files to test:")
     for eml_file in eml_files:
-        print(f"  - {eml_file.name}")
+        print(f"   📧 {eml_file.name}")
     
     # Parse and test each file
     results = []
     
     print(f"\n{'='*80}")
-    print("TESTING EMAIL FILES")
+    print("🚀 TESTING EMAIL FILES")
     print(f"{'='*80}")
     
-    for eml_file in eml_files:
-        print(f"\n📧 Testing: {eml_file.name}")
-        print("-" * 50)
+    for i, eml_file in enumerate(eml_files, 1):
+        print(f"\n📧 Testing ({i}/{len(eml_files)}): {eml_file.name}")
+        print("─" * 60)
         
         # Parse the email
         email_data = parse_eml_file(eml_file)
@@ -127,12 +127,28 @@ def test_eml_files():
             result = "PHISHING" if prediction == 1 else "LEGITIMATE"
             confidence_pct = confidence * 100
             
-            print(f"Subject: {email_data['subject'][:100]}{'...' if len(email_data['subject']) > 100 else ''}")
-            print(f"Sender: {email_data['sender'][:100]}{'...' if len(email_data['sender']) > 100 else ''}")
-            print(f"URLs found: {email_data['urls']}")
-            print(f"Body length: {len(email_data['body'])} characters")
-            print(f"Prediction: {result}")
-            print(f"Confidence: {confidence_pct:.2f}%")
+            # Color-coded output based on prediction
+            if result == "PHISHING":
+                result_icon = "🚨"
+                result_color = "RED"
+            else:
+                result_icon = "✅"
+                result_color = "GREEN"
+            
+            # Format confidence level
+            if confidence_pct >= 80:
+                confidence_level = "HIGH"
+            elif confidence_pct >= 60:
+                confidence_level = "MEDIUM"
+            else:
+                confidence_level = "LOW"
+            
+            print(f"📋 Subject: {email_data['subject'][:80]}{'...' if len(email_data['subject']) > 80 else ''}")
+            print(f"👤 Sender: {email_data['sender'][:60]}{'...' if len(email_data['sender']) > 60 else ''}")
+            print(f"🔗 URLs found: {email_data['urls']}")
+            print(f"📏 Body length: {len(email_data['body']):,} characters")
+            print(f"🎯 Prediction: {result_icon} {result}")
+            print(f"📊 Confidence: {confidence_pct:.1f}% ({confidence_level})")
             
             # Store results
             results.append({
@@ -147,7 +163,7 @@ def test_eml_files():
             })
             
         except Exception as e:
-            print(f"✗ Error predicting: {e}")
+            print(f"❌ Error predicting: {e}")
             results.append({
                 'filename': eml_file.name,
                 'subject': email_data['subject'],
@@ -159,9 +175,9 @@ def test_eml_files():
                 'prediction_proba': [0, 0]
             })
     
-    # Summary
+    # Summary with better formatting
     print(f"\n{'='*80}")
-    print("SUMMARY")
+    print("📊 SUMMARY REPORT")
     print(f"{'='*80}")
     
     results_df = pd.DataFrame(results)
@@ -171,18 +187,49 @@ def test_eml_files():
     legitimate_count = len(results_df[results_df['prediction'] == 'LEGITIMATE'])
     error_count = len(results_df[results_df['prediction'] == 'ERROR'])
     
-    print(f"Total emails tested: {len(results_df)}")
-    print(f"Predicted as PHISHING: {phishing_count}")
-    print(f"Predicted as LEGITIMATE: {legitimate_count}")
+    print(f"📈 Total emails tested: {len(results_df)}")
+    print(f"🚨 Predicted as PHISHING: {phishing_count}")
+    print(f"✅ Predicted as LEGITIMATE: {legitimate_count}")
     if error_count > 0:
-        print(f"Errors: {error_count}")
+        print(f"❌ Errors: {error_count}")
     
-    print(f"\nDetailed Results:")
-    print(results_df[['filename', 'prediction', 'confidence', 'urls']].to_string(index=False))
+    # Calculate success rate
+    success_rate = ((len(results_df) - error_count) / len(results_df)) * 100
+    print(f"📊 Success rate: {success_rate:.1f}%")
+    
+    # Show detailed results in a clean table
+    print(f"\n📋 DETAILED RESULTS:")
+    print("─" * 80)
+    
+    # Create a formatted table
+    print(f"{'Filename':<30} {'Prediction':<12} {'Confidence':<12} {'URLs':<6}")
+    print("─" * 80)
+    
+    for _, row in results_df.iterrows():
+        filename = row['filename'][:28] + ".." if len(row['filename']) > 30 else row['filename']
+        prediction = row['prediction']
+        confidence = f"{row['confidence']:.1f}%" if row['confidence'] > 0 else "N/A"
+        urls = row['urls']
+        
+        # Add icons based on prediction
+        if prediction == "PHISHING":
+            icon = "🚨"
+        elif prediction == "LEGITIMATE":
+            icon = "✅"
+        else:
+            icon = "❌"
+        
+        print(f"{filename:<30} {icon} {prediction:<10} {confidence:<12} {urls:<6}")
     
     # Save results to CSV
     results_df.to_csv('eml_test_results.csv', index=False)
-    print(f"\nResults saved to 'eml_test_results.csv'")
+    print(f"\n💾 Results saved to 'eml_test_results.csv'")
+    
+    # Final status
+    if error_count == 0:
+        print("🎉 All emails processed successfully!")
+    else:
+        print(f"⚠️  {error_count} email(s) had processing errors")
     
     return results_df
 

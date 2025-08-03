@@ -16,6 +16,8 @@ df_dataset = pd.read_csv("CEAS_08.csv")
 # Drop rows with missing values
 df_dataset_clean = df_dataset.dropna(subset=["subject", "body", "urls", "label"])
 
+print(f"📊 Using full dataset: {len(df_dataset_clean)} samples for training")
+
 #Sender address pattern feature extractor
 class SenderPatternFeatures(BaseEstimator, TransformerMixin):
     def fit(self, X, y=None):
@@ -122,15 +124,15 @@ print(X_train.head())
 preprocessor = ColumnTransformer(transformers=[
     ("subject_tfidf", TfidfVectorizer(
         stop_words='english', 
-        max_features=500,  # Increased features
+        max_features=500,  # Back to original features
         ngram_range=(1, 2),  # Use bigrams too
         min_df=2,  # Minimum document frequency
         max_df=0.95  # Maximum document frequency
     ), "subject"),
     ("body_tfidf", TfidfVectorizer(
         stop_words='english', 
-        max_features=1000,  # More features for body
-        ngram_range=(1, 2),
+        max_features=1000,  # Back to original features
+        ngram_range=(1, 2),  # Use bigrams too
         min_df=2,
         max_df=0.95
     ), "body"),
@@ -145,8 +147,8 @@ preprocessor = ColumnTransformer(transformers=[
 model_pipeline = Pipeline([
     ("preprocessor", preprocessor),
     ("classifier", RandomForestClassifier(
-        n_estimators=200,  # More trees
-        max_depth=15,  # Limit depth to prevent overfitting
+        n_estimators=200,  # Back to original parameters
+        max_depth=15,  # Back to original depth
         min_samples_split=10,
         min_samples_leaf=5,
         random_state=42
