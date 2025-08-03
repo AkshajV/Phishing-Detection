@@ -74,7 +74,8 @@ def check_phishtank(url):
             elif in_database and not verified:
                 return 'suspicious'
             else:
-                return 'safe'
+                # URL not in database - treat as unknown, not safe
+                return 'unknown'
         else:
             print(f"⚠️ API call failed: {response.status_code}")
             return 'unknown'
@@ -247,8 +248,12 @@ if __name__ == '__main__':
                     if status == 'malicious':
                         print("    ⚠️ Malicious URL detected!")
                         email_status = "MALICIOUS"
-                    elif status == 'safe':
-                        print("    ✅ URL is safe.")
+                    elif status == 'suspicious':
+                        print("    ⚠️ Suspicious URL detected!")
+                        email_status = "MALICIOUS"
+                    elif status == 'unknown':
+                        print("    ❓ URL not in database - requires ML analysis.")
+                        blacklist_failed = True
                     else:
                         print("    ⚠️ Unknown status.")
                         blacklist_failed = True
