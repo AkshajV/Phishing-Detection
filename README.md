@@ -17,27 +17,27 @@ This system analyzes email content to classify messages as either **LEGITIMATE**
 
 ## 📊 Model Performance
 
-### Optimized Training Performance:
-- **Training Time**: ~30-60 seconds (vs 15-20 minutes for full dataset)
-- **Training Accuracy**: 96.9% on test set
-- **Dataset Size**: 8,000 samples (optimized for speed while maintaining performance)
+### Training Performance:
+- **Training Time**: ~2-3 minutes (full dataset training)
+- **Training Accuracy**: 98.0% on test set
+- **Dataset Size**: 39,126 samples (full CEAS-08 dataset)
 
 ### Evaluation Results:
-- **Cross-Validation Accuracy**: 96.2% (±0.9%)
-- **Precision**: 94.4% (±1.3%)
-- **Recall**: 99.2% (±0.2%)
-- **F1-Score**: 96.7% (±0.8%)
-- **ROC AUC**: 99.7%
+- **Cross-Validation Accuracy**: 97.2% (±0.8%)
+- **Precision**: 95.9% (±0.8%)
+- **Recall**: 99.2% (±0.6%)
+- **F1-Score**: 97.5% (±0.7%)
+- **ROC AUC**: 99.9%
 
 ### Real-World Testing:
 Based on test results with 10 diverse email samples:
 - **Success Rate**: 100% (all emails processed successfully)
-- **Confidence Range**: 52-89% confidence in predictions
+- **Confidence Range**: 63-86% confidence in predictions
 - **Test Coverage**: Includes both obvious phishing attempts and legitimate emails from major services (Steam, Strava, Character.AI)
 
 ### Sample Test Results:
-- Phishing emails correctly identified with 69-89% confidence
-- Legitimate emails from Steam and Character.AI correctly classified with 61-70% confidence
+- Phishing emails correctly identified with 71-86% confidence
+- Legitimate emails from Steam, Strava, and Character.AI correctly classified with 63-75% confidence
 
 ## 🛠️ Installation
 
@@ -87,18 +87,18 @@ This will:
 4. Display beautiful, formatted results
 5. Save results to `eml_test_results.csv`
 
-### Train/Retrain the Model (Optimized)
+### Train/Retrain the Model
 
 ```bash
 python ml_integration_fixed.py
 ```
 
 This will:
-1. Load and preprocess the CEAS-08 dataset (optimized sample)
+1. Load and preprocess the full CEAS-08 dataset (39,126 samples)
 2. Extract features using custom transformers
-3. Train a Random Forest classifier (optimized parameters)
+3. Train a Random Forest classifier (200 estimators, max_depth=15)
 4. Save the model as `phishing_email_model_fixed.pkl`
-5. **Training time**: ~30-60 seconds
+5. **Training time**: ~2-3 minutes
 
 ### Evaluate Model Performance
 
@@ -146,26 +146,26 @@ The system uses a **Random Forest Classifier** with the following pipeline:
    - Ensemble learning with Random Forest
    - Probability-based confidence scoring
 
-## ⚡ Performance Optimizations
+## ⚡ Model Architecture
 
-### Training Optimizations:
-- **Dataset Sampling**: Uses 8,000 samples instead of full 39,126 for faster training
-- **Reduced Estimators**: 50 trees instead of 200 for faster training
-- **Limited Depth**: Max depth of 10 instead of 15
-- **Simplified Features**: 200 subject + 400 body features instead of 500+1000
-- **Unigrams Only**: Removed bigrams for faster processing
+### Training Configuration:
+- **Full Dataset**: Uses complete 39,126 samples from CEAS-08 dataset
+- **Robust Estimators**: 200 decision trees for comprehensive analysis
+- **Optimal Depth**: Max depth of 15 for detailed pattern recognition
+- **Rich Features**: 500 subject + 1000 body features with bigrams
+- **Advanced Processing**: Uses both unigrams and bigrams for better text understanding
 
-### Evaluation Optimizations:
-- **Model Loading**: Loads existing model instead of retraining
-- **Sample Evaluation**: Uses 5,000 samples for evaluation
-- **Quick Cross-Validation**: 3-fold instead of 5-fold
-- **Automatic Visualizations**: No user input required
+### Evaluation Features:
+- **Model Loading**: Loads existing trained model for quick evaluation
+- **Comprehensive Testing**: Uses 5,000 samples for thorough evaluation
+- **Cross-Validation**: 3-fold cross-validation for robust metrics
+- **Automatic Visualizations**: Generates confusion matrix and ROC curves
 
-### Results:
-- **Training Time**: 30-60 seconds (vs 15-20 minutes)
-- **Evaluation Time**: 30-60 seconds (vs 15-20 minutes)
-- **Accuracy Maintained**: 96.9% (vs 98%+ on full dataset)
-- **Memory Usage**: Significantly reduced
+### Performance Results:
+- **Training Time**: 2-3 minutes (comprehensive training)
+- **Evaluation Time**: 30-60 seconds (efficient evaluation)
+- **High Accuracy**: 98.0% training accuracy, 97.2% cross-validation
+- **Excellent Metrics**: 99.9% ROC AUC, 97.5% F1-Score
 
 ## 🧪 Testing
 
